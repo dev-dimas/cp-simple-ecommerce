@@ -1,19 +1,20 @@
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
+const {server} = require("./server");
+const path = require("path");
+const {directoryChecker} = require("./utils/directoryChecker");
 
-const app = express();
-const upload = multer({ dest: path.resolve('public/tmp') });
+const publicPath = [
+  path.resolve("public/shops/avatar"),
+  path.resolve("public/users/avatar"),
+  path.resolve("public/products"),
+];
+publicPath.forEach(async (directory) => {
+  await directoryChecker(directory);
+});
 
-app.use(cors({ origin: '*' }));
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const app = server();
+const host = "localhost";
+const port = 3000;
 
-app.use(notFoundMiddleware);
-app.use(errorMiddleware);
-
-module.exports = app;
+app.listen(port, host, () => {
+  console.log(`Application running on http://${host}:${port}`);
+});
