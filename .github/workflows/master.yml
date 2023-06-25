@@ -1,0 +1,14 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  checking-feature:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: deploy
+        run: echo "deployed to production"
