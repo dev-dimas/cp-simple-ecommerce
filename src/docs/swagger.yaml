@@ -1,0 +1,1044 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Simple E-Commerce
+  description: This repository showcases the culmination of a capstone project that was developed as part of the task completion for the MSIB Productzilla program.
+basePath: /api
+schemes:
+  - https
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: |
+      Authentication types for bearer header
+paths:
+  /login:
+    post:
+      summary: Get user logged in
+      tags:
+        - Auth
+      parameters:
+        - name: login
+          in: body
+          description: User's login info
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        "200":
+          description: Successfully get user logged in
+        "400":
+          description: Bad request (missing required field or validation errors)
+        "403":
+          description: Invalid credentials
+        "500":
+          description: Internal server error
+  /users:
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      parameters:
+        - name: new_user
+          in: body
+          description: Create new_user body request
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: User successfully created
+        "400":
+          description: Bad request (missing required field)
+        "409":
+          description: Username or email is already taken
+        "500":
+          description: Internal server error
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Return requested user data based on id if user is the rightful owner
+        "401":
+          description: Invalid token or user try to access another user's data
+        "500":
+          description: Internal server error
+    put:
+      summary: Update user by ID
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: updated_user
+          in: body
+          description: Create updated_user body request
+          required: true
+          schema:
+            $ref: "#/definitions/EditUser"
+      responses:
+        "200":
+          description: User successfully updated
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "409":
+          description: Username or email is already taken
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete user by ID
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: User successfully deleted
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /users/{id}/change-password:
+    put:
+      summary: Change user's password
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: password
+          in: body
+          description: User password dan current password
+          required: true
+          schema:
+            type: object
+            properties:
+              currentPassword:
+                type: string
+              password:
+                type: string
+      responses:
+        "200":
+          description: Successfully updated user's password
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /users/{id}/avatar:
+    put:
+      summary: Change user's avatar
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: avatar
+          in: formData
+          description: New avatar
+          required: true
+          type: file
+      responses:
+        "200":
+          description: Successfully updated user's avatar
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete user's avatar
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully deleted user's avatar
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /users/{id}/address:
+    put:
+      summary: Change user's address
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: address
+          in: body
+          description: User's address
+          required: true
+          schema:
+            type: object
+            properties:
+              postalCode:
+                type: string
+              street:
+                type: string
+              subdistrict:
+                type: string
+              city:
+                type: string
+              province:
+                type: string
+      responses:
+        "200":
+          description: Successfully updated user's address
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /users/{id}/create-shop:
+    post:
+      summary: Create user's shop
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: shop
+          in: body
+          description: User's new shop
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              shopName:
+                type: string
+              phone:
+                type: string
+      responses:
+        "200":
+          description: Successfully created user's shop
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /shops/{id}:
+    put:
+      summary: Edit shop's profile
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+        - name: shop
+          in: body
+          description: Shop's new profile
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              shopName:
+                type: string
+              phone:
+                type: string
+      responses:
+        "200":
+          description: Successfully edited seller's shop
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete shop
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully deleted seller's shop
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /shops/{id}/products:
+    get:
+      summary: Get all products from spesific shop
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully get all products from specific shop
+        "500":
+          description: Internal server error
+    post:
+      summary: Create new product
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      consumes: -multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+        - name: productName
+          in: formData
+          description: Product's name
+          required: true
+          type: string
+        - name: description
+          in: formData
+          description: Product's description
+          required: true
+          type: string
+        - name: price
+          in: formData
+          description: Product's price
+          required: true
+          type: integer
+        - name: quantity
+          in: formData
+          description: Product's quantity
+          required: true
+          type: integer
+          minimum: 1
+        - name: image1
+          in: formData
+          description: Product's image 1
+          required: true
+          type: file
+        - name: image2
+          in: formData
+          description: Product's image 2
+          type: file
+        - name: image3
+          in: formData
+          description: Product's image 3
+          type: file
+        - name: image4
+          in: formData
+          description: Product's image 4
+          type: file
+        - name: image5
+          in: formData
+          description: Product's image 5
+          type: file
+      responses:
+        "200":
+          description: Successfully created new product
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /shops/{id}/products/{productId}:
+    get:
+      summary: Get one specific product from specific shop
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product's ID
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully get one product from spesific shop
+        "500":
+          description: Internal server error
+    put:
+      summary: Edit product
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product's ID
+          required: true
+          type: string
+        - name: productName
+          in: formData
+          description: Product's name
+          required: true
+          type: string
+        - name: description
+          in: formData
+          description: Product's description
+          required: true
+          type: string
+        - name: price
+          in: formData
+          description: Product's price
+          required: true
+          type: integer
+        - name: quantity
+          in: formData
+          description: Product's quantity
+          required: true
+          type: integer
+        - name: image1
+          in: formData
+          description: Product's image 1
+          type: file
+        - name: image2
+          in: formData
+          description: Product's image 2
+          type: file
+        - name: image3
+          in: formData
+          description: Product's image 3
+          type: file
+        - name: image4
+          in: formData
+          description: Product's image 4
+          type: file
+        - name: image5
+          in: formData
+          description: Product's image 5
+          type: file
+      responses:
+        "200":
+          description: Successfully edited product's data
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete product
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product's ID
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully deleted product
+        "401":
+          description: Invalid token
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error
+  /shops/{id}/avatar:
+    put:
+      summary: Change shop's avatar
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          type: string
+        - name: avatar
+          in: formData
+          description: New avatar
+          required: true
+          type: file
+      responses:
+        "200":
+          description: Successfully updated shop's avatar
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete shop's avatar
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: id
+          in: path
+          description: Shop username
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully deleted shop's avatar
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /carts/{id}:
+    get:
+      summary: Get user's cart
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully get user's cart
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+  /carts/{id}/product/{productId}:
+    post:
+      summary: Add product to cart
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product ID
+          required: true
+      responses:
+        "200":
+          description: Successfully added product to user's cart
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    put:
+      summary: Edit product quantity in the cart
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product ID
+          required: true
+        - name: quantity
+          in: body
+          required: true
+          description: Quantity
+          schema:
+            type: object
+            properties:
+              quantity:
+                type: integer
+      responses:
+        "200":
+          description: Successfully edit product quantity in the user's cart
+        "400":
+          description: Bad request (missing required field or requested quantity exceeds the available stock)
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+    delete:
+      summary: Remove product from user's cart
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product ID
+          required: true
+      responses:
+        "200":
+          description: Successfully removed product from user's cart
+        "401":
+          description: Invalid token
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+  /carts/{id}/checkout/product/{productId}:
+    post:
+      summary: Checkout product from user's cart
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (username)
+          required: true
+          type: string
+        - name: productId
+          in: path
+          description: Product ID
+          required: true
+          type: string
+        - name: pay
+          in: body
+          description: Pay amount
+          required: true
+          schema:
+            type: object
+            properties:
+              payAmount:
+                type: number
+      responses:
+        "200":
+          description: Successfully checkout product from user's cart
+        "400":
+          description: Bad request (missing required field or user's address not set)
+        "401":
+          description: Invalid token
+        "402":
+          description: Payment amount is incorrect
+        "403":
+          description: Cant buy product from own store
+        "404":
+          description: Product not found
+        "409":
+          description: Product's stock is not enough
+        "500":
+          description: Internal server error
+  /transactions/user/{id}:
+    get:
+      summary: Get all transaction by user
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully get all transaction by user
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+  /transactions:
+    post:
+      summary: Create transaction
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transaction
+          in: body
+          description: Transaction data
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              productId:
+                type: string
+              quantity:
+                type: integer
+              payAmount:
+                type: number
+      responses:
+        "200":
+          description: Successfully created transaction
+        "400":
+          description: Bad request (missing required field)
+        "401":
+          description: Invalid token
+        "402":
+          description: Payment amount is incorrect
+        "403":
+          description: Cant buy product from own store
+        "404":
+          description: Product not found
+        "409":
+          description: Product's stock is not enough
+        "500":
+          description: Internal server error
+  /transactions/{transactionId}/user/{id}:
+    put:
+      summary: Confirm product received
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully mark transaction as 'completed'
+        "400":
+          description: Bad request. Cant set transaction status to be 'completed' when transaction status is 'pending' or already 'completed'
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+  /transactions/{transactionId}/user/{id}/cancelled:
+    put:
+      summary: User cancelling transaction
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: User ID (username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully cancelled user's transaction
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+  /transactions/{transactionId}/shop/{id}:
+    put:
+      summary: Seller set product status to be 'shipping'
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: Shop ID (username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully set status transaction to be shipping
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+  /transactions/{transactionId}/shop/{id}/cancelled:
+    put:
+      summary: Seller cancelling transaction
+      security:
+        - Bearer: []
+      tags:
+        - Shops
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: Shop ID (username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully cancelled transaction
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+  /review/{transactionId}/user/{id}:
+    post:
+      summary: Post review product
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: review
+          in: body
+          description: Review for transaction 'completed'
+          required: true
+          schema:
+            type: object
+            properties:
+              rating:
+                type: integer
+                minimum: 1
+                maximum: 5
+              comment:
+                type: string
+      responses:
+        "200":
+          description: Successfully post review
+        "400":
+          description: Bad request (missing required field, transaction is not 'completed', or transaction already given review)
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+    put:
+      summary: Edit review product
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+        - name: review
+          in: body
+          description: Edit review for transaction 'completed'
+          required: true
+          schema:
+            type: object
+            properties:
+              rating:
+                type: integer
+                minimum: 1
+                maximum: 5
+              comment:
+                type: string
+      responses:
+        "200":
+          description: Successfully edited review
+        "400":
+          description: Bad request (missing required field or transaction is not 'completed')
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete review product
+      security:
+        - Bearer: []
+      tags:
+        - Users
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: User ID (Username)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successfully deleted review
+        "401":
+          description: Invalid token
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal server error
+# schema
+definitions:
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      dateOfBirth:
+        type: string
+        format: date
+  EditUser:
+    type: object
+    properties:
+      username:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      dateOfBirth:
+        type: string
+        format: date
