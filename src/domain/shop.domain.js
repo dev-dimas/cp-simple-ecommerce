@@ -14,9 +14,11 @@ const editProfileShop = async (id, data) => {
       await renameAvatarFile(id, data.username);
       await User.findOneAndUpdate({shop: id}, {$set: {shop: data.username}});
     }
-    const updatedData = await Shop.findOneAndUpdate({username: id}, data, {
-      new: true,
-    });
+    const updatedData = await Shop.findOneAndUpdate(
+      {username: id},
+      {$set: {...data, shop_name: data.shopName}},
+      {new: true},
+    );
     delete updatedData._doc.shop_avatar;
     delete updatedData._doc.products;
     delete updatedData._doc.isVerified;

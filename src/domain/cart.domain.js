@@ -19,6 +19,7 @@ const getAllFromCart = async (id) => {
 
 const addProductToCart = async (id, productId) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const cart = await Cart.findOne({user: id});
     const shop = await Shop.findOne({
       products: {$elemMatch: {_id: productId}},
@@ -65,6 +66,7 @@ const addProductToCart = async (id, productId) => {
 
 const editProductQuantity = async (id, productId, quantity) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const cart = await Cart.findOne({user: id});
     const indexCart = cart.products.findIndex(
       (product) => product.productId.toString() === productId,
@@ -99,6 +101,7 @@ const editProductQuantity = async (id, productId, quantity) => {
 
 const deleteProductFromCart = async (id, productId) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const cart = await Cart.findOne({user: id});
     const indexCart = cart.products.findIndex(
       (product) => product.productId.toString() === productId,
@@ -115,6 +118,7 @@ const deleteProductFromCart = async (id, productId) => {
 
 const checkoutFromCart = async (id, productId, payAmount) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const cart = await Cart.findOne({user: id});
     const productIndex = cart.products.findIndex(
       (product) => product.productId.toString() === productId,

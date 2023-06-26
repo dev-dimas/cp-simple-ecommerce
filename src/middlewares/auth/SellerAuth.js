@@ -18,6 +18,7 @@ const sellerAuth = async (req, res, next) => {
     if (!req.headers.authorization && !req.cookies.accessToken) {
       throw {status: 401};
     }
+    if (!accessToken) throw {status: 401};
     const userJWT = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
     if (userJWT._id !== user._id.toString()) throw {status: 401};
 

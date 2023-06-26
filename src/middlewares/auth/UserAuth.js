@@ -16,7 +16,7 @@ const userAuth = async (req, res, next) => {
       accessToken = req.headers.authorization;
     }
     if (!req.headers.authorization && !req.cookies.accessToken) {
-      throw {status: 403};
+      throw {status: 401};
     }
     if (!accessToken) throw {status: 401};
     const userJWT = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);

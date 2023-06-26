@@ -20,6 +20,7 @@ const getAllTransaction = async (id) => {
 
 const createTransaction = async (id, productId, quantity, payAmount) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const user = await User.findOne({username: id});
     const shop = await Shop.findOne({
       products: {$elemMatch: {_id: productId}},
@@ -59,6 +60,7 @@ const createTransaction = async (id, productId, quantity, payAmount) => {
 
 const confirmProductReceived = async (transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const transaction = await Transaction.findOne({_id: transactionId});
     const user = await User.findOne({username: id});
     const isTransactionExist = user.transactions.find(
@@ -86,8 +88,14 @@ const confirmProductReceived = async (transactionId, id) => {
 
 const buyerCancelledTransaction = async (transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const user = await User.findOne({username: id});
     const transaction = await Transaction.findOne({_id: transactionId});
+    if (transaction.status === "shipping")
+      throw {
+        status: 400,
+        message: "You cant cancelled transaction when it's on shipping status",
+      };
     if (!user || !transaction) throw {status: 404};
     const isAuthorized = user.transactions.find(
       (userTransaction) =>
@@ -103,6 +111,7 @@ const buyerCancelledTransaction = async (transactionId, id) => {
 
 const setProductShipped = async (transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const shop = await Shop.findOne({username: id});
     const transaction = await Transaction.findOne({_id: transactionId});
     if (!shop || !transaction) throw {status: 404};
@@ -110,6 +119,14 @@ const setProductShipped = async (transactionId, id) => {
       (product) => product._id.toString() === transaction.productId.toString(),
     );
     if (!isAuthorized) throw {status: 401};
+    if (transaction.status === "completed")
+      throw {
+        status: 400,
+        message:
+          "This transaction is done/completed. You cant set to 'shipping'",
+      };
+    if (transaction.status === "shipping")
+      throw {status: 400, message: "This transaction is already on 'shipping'"};
     transaction.status = "shipping";
     await transaction.save();
     return;
@@ -119,6 +136,7 @@ const setProductShipped = async (transactionId, id) => {
 };
 
 const sellerCancelledTransaction = async (transactionId, id) => {
+  if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
   const shop = await Shop.findOne({username: id});
   const transaction = await Transaction.findOne({_id: transactionId});
   if (!shop || !transaction) throw {status: 404};
@@ -132,6 +150,7 @@ const sellerCancelledTransaction = async (transactionId, id) => {
 
 const setTransactionCancelled = async (transactionId) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const transaction = await Transaction.findOne({_id: transactionId});
     if (!transaction) throw {status: 404};
     if (transaction.status === "completed")

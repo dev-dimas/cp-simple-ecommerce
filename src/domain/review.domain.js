@@ -1,9 +1,11 @@
+const {default: mongoose} = require("mongoose");
 const Shop = require("../models/shopModel");
 const Transaction = require("../models/transactionModel");
 const User = require("../models/userModel");
 
 const postReview = async (rating, comment, transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const transaction = await Transaction.findOne({_id: transactionId});
     const user = await User.findOne({
       username: id,
@@ -44,6 +46,7 @@ const postReview = async (rating, comment, transactionId, id) => {
 
 const editReview = async (rating, comment, transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const transaction = await Transaction.findOne({_id: transactionId});
     const user = await User.findOne({
       username: id,
@@ -77,6 +80,7 @@ const editReview = async (rating, comment, transactionId, id) => {
 
 const deleteReview = async (transactionId, id) => {
   try {
+    if (!mongoose.isValidObjectId(transactionId)) throw {status: 404};
     const transaction = await Transaction.findOne({_id: transactionId});
     const user = await User.findOne({username: id});
     if (!transaction || !user) throw {status: 404};

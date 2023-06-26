@@ -8,10 +8,10 @@ const editProfileShop = async (req, res, next) => {
       throw {status: 400, validation_errors: errors};
     }
     const {id} = req.params;
-    const {username, shop_name, phone} = req.body;
+    const {username, shopName, phone} = req.body;
     const updatedData = await shopDomain.editProfileShop(id, {
       username,
-      shop_name,
+      shopName,
       phone,
     });
     res.send({updated_shop: updatedData, error: false});

@@ -16,6 +16,7 @@ const getAllProduct = async (id) => {
 
 const getOneProduct = async (id, productId) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const shop = await Shop.findOne({username: id});
     if (!shop) throw {status: 404};
     const product = shop.products.find(
@@ -54,6 +55,7 @@ const createProduct = async (id, data) => {
     delete data.files;
     const newProduct = {
       _id: productId,
+      product_name: data.productName,
       ...data,
       images,
     };
@@ -67,6 +69,7 @@ const createProduct = async (id, data) => {
 
 const editProduct = async (id, productId, data) => {
   try {
+    if (!mongoose.isValidObjectId(productId)) throw {status: 404};
     const shop = await Shop.findOne({username: id});
     if (!shop) throw {status: 404};
     const product = shop.products.find(
@@ -102,6 +105,7 @@ const editProduct = async (id, productId, data) => {
       ...shop.products[productIndex].toObject(),
       ...data,
       _id: shop.products[productIndex]._id,
+      product_name: data.productName,
     };
     shop.products[productIndex] = updatedProduct;
     await shop.save();
@@ -112,6 +116,7 @@ const editProduct = async (id, productId, data) => {
 };
 
 const deleteProduct = async (id, productId) => {
+  if (!mongoose.isValidObjectId(productId)) throw {status: 404};
   const shop = await Shop.findOne({username: id});
   if (!shop) throw {status: 404};
   const product = shop.products.find(

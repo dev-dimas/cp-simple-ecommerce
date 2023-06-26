@@ -125,10 +125,7 @@ const shopSchema = new mongoose.Schema(
       type: [productSchema],
       default: [],
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+
   },
   {
     timestamps: true,
