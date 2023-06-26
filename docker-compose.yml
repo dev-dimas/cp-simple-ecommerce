@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  mongodb:
+    image: mongo:6.0.1
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
+    volumes:
+      - "./volumes/mongodb/data:/data"
+  app:
+    image: devdimas/cp-simple-ecommerce:base
+    restart: unless-stopped
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=e-commerce
+      - MONGODB_USERNAME=
+      - MONGODB_PASSWORD=
+      - JWT_SECRET_KEY=z6mXSZbFwBklvuLGyQJdfxUJGdun1I
+
+    ports:
+      - 3000:3000

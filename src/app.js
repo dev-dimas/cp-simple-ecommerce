@@ -12,9 +12,7 @@ publicPath.forEach(async (directory) => {
 });
 
 const app = server();
-const host = "localhost";
 const port = 3000;
 
-app.listen(port, host, () => {
-  console.log(`Application running on http://${host}:${port}`);
-});
+app.listen(port);
+console.log(`Application running on port ${port}`);
