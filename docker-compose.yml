@@ -4,19 +4,19 @@ services:
     image: mongo:6.0.1
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=
-      - MONGO_INITDB_ROOT_PASSWORD=
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
     volumes:
       - "./volumes/mongodb/data:/data"
   app:
     image: devdimas/cp-simple-ecommerce:base
     restart: unless-stopped
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PORT=27017
-      - MONGODB_DATABASE=e-commerce
-      - MONGODB_USERNAME=
-      - MONGODB_PASSWORD=
+      - MONGODB_HOST=154.26.131.99
+      - MONGODB_PORT=31017
+      - MONGODB_DATABASE=bootcamp-b5-kelompok3
+      - MONGODB_USERNAME=kelompok3
+      - MONGODB_PASSWORD=MSIBB5123
       - JWT_SECRET_KEY=z6mXSZbFwBklvuLGyQJdfxUJGdun1I
 
     ports:
