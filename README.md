@@ -9,6 +9,7 @@ This repository showcases the culmination of a capstone project that was develop
 - 🔒 Bcrypt — A library for securely hashing and verifying passwords.
 - 🎫 JWT — JSON Web Token is used for authenticating and authorizing users.
 - 📚 Swagger — An interactive and structured API documentation tool.
+- 🔍 Express Validator — Middleware library used for data validation in Express.js applications.
 - 💖 Prettier — Code Formatter for consistent style
 - ⚙️ EditorConfig — Maintain consistent coding styles across editors and IDEs
 
